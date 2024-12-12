@@ -1,0 +1,129 @@
+<job>
+<runtime>
+<description>
+Name:
+  check_rds_cals (nrpe_nt-plugin) 1.0 based on check_windows_update (nrpe_nt-plugin) 1.5
+
+License:
+  The nagios plugins come with ABSOLUTELY NO WARRANTY. You may redistribute
+  copies of the plugins under the terms of the GNU General Public License.
+  For more information about these matters, see the file named COPYING.
+
+Changelog / Contributors: 
+  2011 September - Jorge Schrauwen (jorge@blackdot.be) 
+  
+</description>
+  <named
+    name="h"
+    helpstring="Help"
+    type="simple"
+    required="false" 
+  />
+  <named
+    name="s"
+    helpstring="RDS Licensing server"
+    type="string"
+    required="false"
+  />
+  <named
+    name="w"
+    helpstring="number of remaining CAL's before warning status"
+    type="string"
+    required="false"
+  />
+  <named
+    name="c"
+    helpstring="number of remaining CAL's before critical status "
+    type="string"
+    required="false"
+  />  
+</runtime>
+<script language="VBScript">
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Const's and Var's
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'Cons for return val's
+Const intOK = 0
+Const intWarning = 1
+Const intCritical = 2
+Const intUnknown = 3
+
+' Cons for FSO
+Const ForReading = 1
+Const ForWriting = 2
+
+Dim updatesNames
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Params
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+If Wscript.Arguments.Named.Exists("h") Then
+	Wscript.Echo "Usage: check_rds_cals.wsf /w:1 /c:2"
+	Wscript.Echo "/w: - number of remaining CAL's before warning status "
+	Wscript.Echo "/c: - number of remaining CAL's before critical status "
+End If
+
+If Wscript.Arguments.Named.Exists("w") Then
+	intWarningLvl = Cint(Wscript.Arguments.Named("w"))
+Else
+	intWarningLvl = 2
+End If
+
+If Wscript.Arguments.Named.Exists("c") Then
+	intCriticLvl = Cint(Wscript.Arguments.Named("c"))
+Else
+	intCriticLvl = 1
+End If
+
+
+If Wscript.Arguments.Named.Exists("s") Then
+	strServer = Wscript.Arguments.Named("s")
+Else
+	strServer = "."
+End If
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Main
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Set objWMIService = GetObject("winmgmts:" _
+    & "{impersonationLevel=impersonate}!\\" & strServer & "\root\cimv2")
+
+Set colItems = objWMIService.ExecQuery("SELECT * FROM Win32_TSIssuedLicense")
+
+intTotal = 0
+intAvailable = 0
+intIssues = 0
+
+'http://msdn.microsoft.com/en-us/library/windows/desktop/aa383803%28v=vs.85%29.aspx
+Set colItems = objWMIService.ExecQuery("SELECT * FROM Win32_TSLicenseKeyPack") 
+For Each objItem in colItems
+	Select Case objItem.KeyPackType 
+		Case 1,2,3,5
+			intTotal = intTotal + objItem.TotalLicenses
+			intAvailable = intAvailable + objItem.AvailableLicenses
+			intIssues = intIssues + objItem.IssuedLicenses
+	End Select
+Next
+
+If intAvailable <= intCriticLvl Then
+	WScript.Echo "CRITICAL - Currently there are " & intAvailable & " out of " & intTotal  & " CAL's available!|TotalLicenses=" & intTotal  & ";AvailableLicenses=" & intAvailable  & ";IssuedLicenses=" & intIssues & ";"
+	Wscript.Quit(intCritical)
+End If
+
+If intAvailable <= intWarningLvl Then
+	WScript.Echo "WARNING - Currently there are " & intAvailable & " out of " & intTotal  & " CAL's available!|TotalLicenses=" & intTotal  & ";AvailableLicenses=" & intAvailable  & ";IssuedLicenses=" & intIssues & ";"
+	Wscript.Quit(intWarning)
+Else
+	WScript.Echo "OK - Currently there are " & intAvailable & " out of " & intTotal  & " CAL's available!|TotalLicenses=" & intTotal  & ";AvailableLicenses=" & intAvailable  & ";IssuedLicenses=" & intIssues & ";"
+	Wscript.Quit(intOK)
+End If
+
+WScript.Echo "UNKNOWN - Oops!  You shouldn't end up here!|TotalLicenses=-1;AvailableLicenses=-1;IssuedLicenses=-1;"
+Wscript.Quit(intUnkown)
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' End
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+</script>
+</job>
+
