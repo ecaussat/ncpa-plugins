@@ -17,25 +17,25 @@ $expected = Get-EventLogDate -EventID 13
 $unexpected = Get-EventLogDate -EventID 41
 
 if (-not $expected -and -not $unexpected) {
-    Write-Output "Avertissement Le dernier redémarrage est inconnu"
+    Write-Output "Avertissement Le dernier redemarrage est inconnu"
     exit 0
 }
 
 if (-not $unexpected) {
-    Write-Output "OK Le dernier redémarrage le $($expected.ToString('dd/MM/yyyy HH:mm:ss')) était propre"
+    Write-Output "OK Le dernier redemarrage le $($expected.ToString('dd/MM/yyyy HH:mm:ss')) etait propre"
     exit 0
 }
 
 if ($unexpected -gt $expected) {
     $currentDate = Get-Date
     if ($unexpected.Date -eq $currentDate.Date) {
-        Write-Output "Critique Redémarrage inattendu le $($unexpected.ToString('dd/MM/yyyy HH:mm:ss'))"
+        Write-Output "Critique Redemarrage inattendu le $($unexpected.ToString('dd/MM/yyyy HH:mm:ss'))"
         exit 2
     } else {
-        Write-Output "OK Mais Redémarrage inattendu le $($unexpected.ToString('dd/MM/yyyy HH:mm:ss'))."
+        Write-Output "OK Mais Redemarrage inattendu le $($unexpected.ToString('dd/MM/yyyy HH:mm:ss'))."
         exit 0
     }
 } else {
-    Write-Output "OK Le dernier redémarrage le $($expected.ToString('dd/MM/yyyy HH:mm:ss')) était propre"
+    Write-Output "OK Le dernier redemarrage le $($expected.ToString('dd/MM/yyyy HH:mm:ss')) etait propre"
     exit 0
 }
