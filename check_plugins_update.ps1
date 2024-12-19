@@ -10,7 +10,7 @@ if (-Not (Test-Path -Path $tempPath)) {
 }
 
 # Télécharger le fichier updates.txt
-Invoke-WebRequest -Uri "$repoUrl/raw/main/$updatesFile" -OutFile "$tempPath\$updatesFile"
+Invoke-WebRequest -Uri "$repoUrl/$updatesFile" -OutFile "$tempPath\$updatesFile"
 
 # Lire le fichier updates.txt et stocker les hash dans un dictionnaire
 $hashes = @{}
