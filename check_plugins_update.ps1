@@ -11,7 +11,6 @@ if (-Not (Test-Path -Path $tempPath)) {
 
 # Télécharger le fichier updates.txt
 Invoke-WebRequest -Uri "$repoUrl/$updatesFile" -OutFile "$tempPath\$updatesFile"
-#echo "$repoUrl/raw/main/$updatesFile"
 # Lire le fichier updates.txt et stocker les hash dans un dictionnaire
 $hashes = @{}
 Get-Content "$tempPath\$updatesFile" | ForEach-Object {
@@ -38,7 +37,7 @@ $errorsCount = 0
 # Vérifier les fichiers et télécharger ceux qui sont absents ou incorrects
 foreach ($file in $hashes.Keys) {
     $localFile = "$localPath\$file"
-    $downloadUrl = "$repoUrl/raw/main/$file"
+    $downloadUrl = "$repoUrl/$file"
     $tempFile = "$tempPath\$file"
 
     $download = $false
