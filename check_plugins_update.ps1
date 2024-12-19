@@ -1,6 +1,6 @@
 # Définir les chemins locaux et distants
 $localPath = "C:\Program Files\Nagios\NCPA\plugins"
-$repoUrl = "https://github.com/ecaussat/ncpa-plugins"
+$repoUrl = "https://nagios.awcloud.fr/ncpa-plugins"
 $tempPath = "C:\Temp\plugins"
 $updatesFile = "updates.txt"
 
