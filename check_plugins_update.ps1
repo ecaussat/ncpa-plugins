@@ -1,6 +1,6 @@
 # Définir les chemins locaux et distants
 $localPath = "C:\Program Files\Nagios\NCPA\plugins"
-$repoUrl = "https://nagios.awcloud.fr/ncpa-plugins"
+$repoUrl = "https://nagios.awcloud.fr/nagios/ncpa-plugins"
 $tempPath = "C:\Temp\plugins"
 $updatesFile = "updates.txt"
 
@@ -11,7 +11,7 @@ if (-Not (Test-Path -Path $tempPath)) {
 
 # Télécharger le fichier updates.txt
 Invoke-WebRequest -Uri "$repoUrl/$updatesFile" -OutFile "$tempPath\$updatesFile"
-
+#echo "$repoUrl/raw/main/$updatesFile"
 # Lire le fichier updates.txt et stocker les hash dans un dictionnaire
 $hashes = @{}
 Get-Content "$tempPath\$updatesFile" | ForEach-Object {
